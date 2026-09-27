@@ -1,5 +1,5 @@
 {
-  "name": "kandev-plugin-template-contract-tests",
+  "name": "kandev-plugin-coordinator-template-contract-tests",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,7 +12,7 @@
   "devDependencies": {
     "@kandev/plugin-sdk": "file:../kandev/apps/packages/plugin-sdk",
     "typescript": "5.9.3",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "overrides": {
     "nanoid": "5.1.16"

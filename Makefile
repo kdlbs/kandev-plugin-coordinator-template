@@ -3,10 +3,10 @@
 
 # When you rename the plugin, update BIN and VERSION to match manifest.yaml's
 # id and version (PKG_OUT is derived from them).
-BIN := bin/kandev-plugin-template
+BIN := bin/kandev-plugin-coordinator-template
 VERSION := 0.1.0
 STAGE := .build/stage
-PKG_OUT := kandev-plugin-template-$(VERSION).tar.gz
+PKG_OUT := kandev-plugin-coordinator-template-$(VERSION).tar.gz
 
 # The sibling kandev checkout the `replace` in go.mod points at (see README,
 # "Developing against the SDK"). The packaging step runs plugin-pack from
@@ -124,4 +124,4 @@ verify-package-host: package-host
 		fi
 
 clean:
-	rm -rf bin $(STAGE) kandev-plugin-template-*.tar.gz
+	rm -rf bin $(STAGE) kandev-plugin-coordinator-template-*.tar.gz

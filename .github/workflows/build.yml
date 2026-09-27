@@ -1,6 +1,8 @@
 name: Build
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -26,7 +28,7 @@ jobs:
         with:
           repository: kdlbs/kandev
           path: kandev
-          ref: f218880ecbaa3d019d65b5d84fca6bdf160eced6
+          ref: f24a785cd3012bbf14c06134ed480e82fd7613a3
           sparse-checkout: apps/backend
 
       - name: Set up Go

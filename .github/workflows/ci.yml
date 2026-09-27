@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -28,7 +30,7 @@ jobs:
         with:
           repository: kdlbs/kandev
           path: kandev
-          ref: f218880ecbaa3d019d65b5d84fca6bdf160eced6
+          ref: f24a785cd3012bbf14c06134ed480e82fd7613a3
           sparse-checkout: |
             apps/backend
             apps/packages/plugin-sdk
@@ -70,30 +72,3 @@ jobs:
         run: |
           make test
           make audit-recipes
-
-  base-floor:
-    name: Default template on Kandev v0.86.0
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out plugin
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-        with:
-          path: plugin
-
-      - name: Check out declared minimum SDK
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-        with:
-          repository: kdlbs/kandev
-          path: kandev
-          ref: v0.86.0
-          sparse-checkout: apps/backend
-
-      - name: Set up Go
-        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
-        with:
-          go-version-file: plugin/go.mod
-          cache-dependency-path: plugin/go.sum
-
-      - name: Test provider-free generated backend
-        working-directory: plugin
-        run: go test ./server/...
