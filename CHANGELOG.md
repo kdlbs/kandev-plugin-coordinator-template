@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1] - 2026-09-30
+
+### Changed
+
+- fix: publish release archive checksum (#2) (0e7b862)
+
+
 ## [0.2.0] - 2026-09-27
 
 ### Changed
