@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := build
+
 .PHONY: build run test test-backend test-recipes typecheck-recipes audit-recipes sdk-check \
 	fmt vet package package-host verify-package verify-package-host clean
 
@@ -51,7 +53,8 @@ vet:
 ## Cross-compile server/plugin-<goos>-<goarch>[.exe] for every platform in
 ## manifest.yaml's runtime.executables, stage manifest.yaml + ui/ alongside
 ## them, and pack the tree into $(PKG_OUT) with
-## backend-owned cmd/plugin-pack from the separately pinned tooling checkout. Install the tarball via Settings > Plugins or curl -F package=@...
+## backend-owned cmd/plugin-pack from the separately pinned tooling checkout.
+## Install the tarball via Settings > Plugins or curl -F package=@...
 package: sdk-check
 	rm -rf $(STAGE)
 	mkdir -p $(STAGE)/server
