@@ -210,3 +210,34 @@ mutation, and the inactive source-control adapter recipe were not exercised.
 No real provider credentials were used. The recipe remains excluded from the
 package and is covered by its actual Go/TypeScript tests. This evidence is a
 migration smoke check, not certification of every optional integration.
+
+
+## Review follow-up validation
+
+Commit `e884058b8e75682700722ffacee36e87cd2a8ed2` enforces the packaging
+checkout's HEAD against `.kandev-tooling-ref`, combines workflow checks in one
+Make invocation, and clarifies author guidance/evidence. It changes no Go or
+frontend runtime code, dependency pins, or shipped manifest. A following
+commit only wraps guidance and records these results.
+
+```bash
+make tooling-check KANDEV_TOOLING=/tmp/coordinator-sdk-migration-evidence/kandev-tooling/apps/backend
+CGO_ENABLED=0 make sdk-check vet test build audit-recipes verify-package-host verify-package \
+  KANDEV_TOOLING=/tmp/coordinator-sdk-migration-evidence/kandev-tooling/apps/backend
+go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 \
+  -shellcheck= -pyflakes= .github/workflows/build.yml \
+  .github/workflows/ci.yml .github/workflows/release.yml
+```
+
+All passed, including both Go packages, all 14 recipe UI tests, typecheck,
+module/SDK checks, audit, host packaging, all five platform executables and
+internal checksums. The follow-up full archive SHA-256 is `6d3dd73f9f69dba5768c38109e11eece613e41b7cc2c15700580e784c1fda6f5`.
+Negative checks passed too: `make -s -o sdk-check package-host` and
+`make -s -o sdk-check package`, each with `KANDEV_TOOLING=.` and
+`STAGE=/tmp/coordinator-should-not-stage`, rejected the wrong Git commit with
+the expected pin-mismatch message before creating the staging directory.
+Here `-o sdk-check` isolates only the negative tooling gate; the successful
+full validation above ran the real SDK checker.
+
+The original full-archive installation and browser smoke remain applicable
+because the runtime sources and dependencies are unchanged by this follow-up.
