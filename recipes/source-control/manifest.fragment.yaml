@@ -1,9 +1,9 @@
 # Merge this fragment into manifest.yaml only when enabling the source-control
 # recipe. Replace every `acme` identifier and label consistently.
 #
-# Do not copy the template's 0.86.0 minimum. Set min_kandev_version to the first
-# released Kandev version containing these provider/reference contracts. At the
-# time this recipe was added, they existed after v0.87.1 but had no release tag.
+# SDK 0.1.0 supports API v2 and requires Kandev 0.99.0 across the whole SDK.
+# Keep this minimum when merging; recheck installed SDK release records on upgrades.
+min_kandev_version: "0.99.0"
 
 # These are required only by the sample Host-backed repository resolver and
 # Host-state association store. Remove any capability your concrete adapters do

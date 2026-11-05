@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kandev/kandev/pkg/pluginsdk"
+	"github.com/kdlbs/kandev/pluginsdk"
 )
 
 var coordinatorWatchEvents = []string{"task.updated", "task.state_changed"}

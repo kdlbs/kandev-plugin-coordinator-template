@@ -160,15 +160,19 @@ jobs:
           path: plugin
           ref: ${{ github.event_name == 'push' && github.ref || needs.prepare.outputs.tag }}
 
-      - name: Checkout kandev SDK contract
+      - name: Read packaging tooling pin
+        id: tooling
+        run: echo "ref=$(cat plugin/.kandev-tooling-ref)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out Kandev packaging tooling
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: kdlbs/kandev
-          path: kandev
-          ref: f24a785cd3012bbf14c06134ed480e82fd7613a3
+          path: kandev-tooling
+          ref: ${{ steps.tooling.outputs.ref }}
           sparse-checkout: |
             apps/backend
-            apps/packages/plugin-sdk
+            pluginsdk
 
       - name: Setup Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
@@ -187,6 +191,10 @@ jobs:
         working-directory: plugin
         run: npm ci --ignore-scripts
 
+      - name: Check installed SDK compatibility
+        working-directory: plugin
+        run: make sdk-check
+
       - name: Verify
         working-directory: plugin
         run: |
@@ -197,7 +205,7 @@ jobs:
 
       - name: Package and validate all platforms
         working-directory: plugin
-        run: make verify-package
+        run: make verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"
 
       - name: Generate release checksums
         working-directory: plugin

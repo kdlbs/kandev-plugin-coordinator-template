@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/kandev/kandev/pkg/pluginsdk"
+	"github.com/kdlbs/kandev/pluginsdk"
 )
 
 type coordinatorPlugin struct {

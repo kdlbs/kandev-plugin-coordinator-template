@@ -1,4 +1,4 @@
-.PHONY: build run test test-backend test-recipes typecheck-recipes audit-recipes \
+.PHONY: build run test test-backend test-recipes typecheck-recipes audit-recipes sdk-check \
 	fmt vet package package-host verify-package verify-package-host clean
 
 # When you rename the plugin, update BIN and VERSION to match manifest.yaml's
@@ -8,21 +8,17 @@ VERSION := 0.2.1
 STAGE := .build/stage
 PKG_OUT := kandev-plugin-coordinator-template-$(VERSION).tar.gz
 
-# The sibling kandev checkout the `replace` in go.mod points at (see README,
-# "Developing against the SDK"). The packaging step runs plugin-pack from
-# INSIDE this directory, i.e. in kandev's own module context, rather than as
-# `go run github.com/kandev/kandev/cmd/plugin-pack` from here. Both spellings
-# work, but the second resolves plugin-pack's dependencies against *this*
-# module's go.sum — and plugin-pack imports far more of the kandev backend
-# than server/ does, so those entries are absent and packaging dies with
-# "missing go.sum entry". Adding them would mean this template's go.sum has to
-# track every dependency the kandev backend grows, which `go mod tidy` then
-# fights over. Building it where it lives sidesteps all of that.
-KANDEV_SDK := ../kandev/apps/backend
+# Packaging-only Kandev source input. SDK compilation uses public modules.
+# Checkout the exact commit in .kandev-tooling-ref with apps/backend and pluginsdk.
+# Run plugin-pack in its own module so backend dependencies stay out of go.sum.
+KANDEV_TOOLING ?= ../kandev-tooling/apps/backend
+
+sdk-check:
+	go run github.com/kdlbs/kandev/pluginsdk/cmd/kandev-sdk-check@v0.1.0 --manifest manifest.yaml --frontend-sdk node_modules/@kdlbs/plugin-sdk
 
 ## Build the plugin binary for the host platform (development use). kandev
 ## itself always installs from `make package`/`package-host` output, not this.
-build:
+build: sdk-check
 	mkdir -p bin
 	go build -o $(BIN) ./server/...
 
@@ -32,7 +28,7 @@ build:
 run: build
 	./$(BIN)
 
-test: test-backend typecheck-recipes test-recipes
+test: sdk-check test-backend typecheck-recipes test-recipes
 
 test-backend:
 	go test ./server/... ./recipes/source-control/server/...
@@ -55,9 +51,8 @@ vet:
 ## Cross-compile server/plugin-<goos>-<goarch>[.exe] for every platform in
 ## manifest.yaml's runtime.executables, stage manifest.yaml + ui/ alongside
 ## them, and pack the tree into $(PKG_OUT) with
-## github.com/kandev/kandev/cmd/plugin-pack (resolved via the `replace` in
-## go.mod). Install the tarball via Settings > Plugins or curl -F package=@...
-package:
+## backend-owned cmd/plugin-pack from the separately pinned tooling checkout. Install the tarball via Settings > Plugins or curl -F package=@...
+package: sdk-check
 	rm -rf $(STAGE)
 	mkdir -p $(STAGE)/server
 	cp manifest.yaml $(STAGE)/manifest.yaml
@@ -67,19 +62,19 @@ package:
 	GOOS=darwin  GOARCH=amd64 go build -o $(STAGE)/server/plugin-darwin-amd64      ./server
 	GOOS=darwin  GOARCH=arm64 go build -o $(STAGE)/server/plugin-darwin-arm64      ./server
 	GOOS=windows GOARCH=amd64 go build -o $(STAGE)/server/plugin-windows-amd64.exe ./server
-	cd $(KANDEV_SDK) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT)
+	cd $(KANDEV_TOOLING) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT)
 	rm -rf $(STAGE)
 	@echo "Wrote $(PKG_OUT)"
 
 ## Package for the host platform only — faster local iteration than the full
 ## 5-platform `make package` (matches plugin-pack's -platform-only).
-package-host:
+package-host: sdk-check
 	rm -rf $(STAGE)
 	mkdir -p $(STAGE)/server
 	cp manifest.yaml $(STAGE)/manifest.yaml
 	cp -r ui $(STAGE)/ui
 	go build -o $(STAGE)/server/plugin-$$(go env GOOS)-$$(go env GOARCH)$$(go env GOEXE) ./server
-	cd $(KANDEV_SDK) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT) -platform-only
+	cd $(KANDEV_TOOLING) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT) -platform-only
 	rm -rf $(STAGE)
 	@echo "Wrote $(PKG_OUT)"
 

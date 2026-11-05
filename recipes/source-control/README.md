@@ -7,12 +7,17 @@ and composer-reference surfaces without teaching an Acme-specific API.
 The default template deliberately does not activate or package this directory.
 `make package` copies only `manifest.yaml`, `ui/`, and the runtime binaries.
 Copy the pieces you need, supply concrete provider adapters, merge the manifest
-fragment, and raise `min_kandev_version` before publishing.
+fragment, and retain at least the SDK-wide `min_kandev_version: "0.99.0"` floor.
 
-Contract references at the pinned source revision: [plugin authoring](https://github.com/kdlbs/kandev/blob/f218880ecbaa3d019d65b5d84fca6bdf160eced6/docs/public/plugins-authoring.md),
-[manifest](https://github.com/kdlbs/kandev/blob/f218880ecbaa3d019d65b5d84fca6bdf160eced6/docs/public/plugins-manifest.md),
-[frontend SDK](https://github.com/kdlbs/kandev/blob/f218880ecbaa3d019d65b5d84fca6bdf160eced6/apps/packages/plugin-sdk/src/index.ts),
-and [backend SDK extensions](https://github.com/kdlbs/kandev/blob/f218880ecbaa3d019d65b5d84fca6bdf160eced6/apps/backend/pkg/pluginsdk/plugin.go).
+This recipe compiles against public Go and frontend SDK **0.1.0**, installed
+from the root module and npm lockfile. It supports manifest API v2 and inherits
+the published SDK-wide Kandev **0.99.0** minimum.
+
+Contract references at the SDK release source:
+[plugin authoring](https://github.com/kdlbs/kandev/blob/pluginsdk/v0.1.0/docs/public/plugins-authoring.md),
+[manifest](https://github.com/kdlbs/kandev/blob/pluginsdk/v0.1.0/docs/public/plugins-manifest.md),
+[frontend SDK](https://github.com/kdlbs/kandev/blob/pluginsdk/v0.1.0/apps/packages/plugin-sdk/src/index.ts),
+and [backend SDK extensions](https://github.com/kdlbs/kandev/blob/pluginsdk/v0.1.0/pluginsdk/plugin.go).
 
 ## What belongs where
 
@@ -151,15 +156,16 @@ timeouts, disconnects, and revoked access fail closed.
   access. Never put tokens in browser payloads, repository descriptors,
   snapshots, logs, cursors, or action responses.
 
-At this recipe's introduction, the contracts were present at Kandev source
-commit `f218880ecbaa3d019d65b5d84fca6bdf160eced6` after release `v0.87.1`; no
-release tag contained them yet. Pin development/CI to a known source contract,
-then set `min_kandev_version` to the first release that contains it. Do not use
-the base template's `0.86.0` floor for an activated provider recipe.
+Keep `min_kandev_version` at or above the highest floor in the installed SDK
+release records. The fragment and base manifest both use `0.99.0` for SDK
+`0.1.0`; do not infer a lower minimum from an individual provider feature.
+Run the root `make sdk-check` after merging this fragment and before packaging.
 
 ## Verification
 
 ```sh
+npm ci --ignore-scripts
+make sdk-check
 go test ./recipes/source-control/server -count=1
 npm run typecheck:recipes
 npm run test:recipes

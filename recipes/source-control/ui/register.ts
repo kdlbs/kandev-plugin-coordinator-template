@@ -7,7 +7,7 @@ import type {
   ReviewSummary,
   ReviewTaskAssociation,
   ReviewTaskStatus,
-} from "@kandev/plugin-sdk";
+} from "@kdlbs/plugin-sdk";
 import { createSnapshotStore } from "./review-store";
 
 export type SourceControlRecipeOptions = {
