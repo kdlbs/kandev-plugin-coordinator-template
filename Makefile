@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-.PHONY: build run test test-backend test-recipes typecheck-recipes audit-recipes sdk-check \
+.PHONY: build run test test-backend test-recipes typecheck-recipes audit-recipes sdk-check tooling-check \
 	fmt vet package package-host verify-package verify-package-host clean
 
 # When you rename the plugin, update BIN and VERSION to match manifest.yaml's
@@ -14,6 +14,15 @@ PKG_OUT := kandev-plugin-coordinator-template-$(VERSION).tar.gz
 # Checkout the exact commit in .kandev-tooling-ref with apps/backend and pluginsdk.
 # Run plugin-pack in its own module so backend dependencies stay out of go.sum.
 KANDEV_TOOLING ?= ../kandev-tooling/apps/backend
+
+tooling-check:
+	@set -eu; \
+		expected="$$(cat .kandev-tooling-ref)"; \
+		actual="$$(git -C "$(KANDEV_TOOLING)" rev-parse HEAD)"; \
+		if [ "$$actual" != "$$expected" ]; then \
+			printf 'Packaging tooling must be at %s; found %s in %s\n' "$$expected" "$$actual" "$(KANDEV_TOOLING)" >&2; \
+			exit 1; \
+		fi
 
 sdk-check:
 	go run github.com/kdlbs/kandev/pluginsdk/cmd/kandev-sdk-check@v0.1.0 --manifest manifest.yaml --frontend-sdk node_modules/@kdlbs/plugin-sdk
@@ -55,7 +64,7 @@ vet:
 ## them, and pack the tree into $(PKG_OUT) with
 ## backend-owned cmd/plugin-pack from the separately pinned tooling checkout.
 ## Install the tarball via Settings > Plugins or curl -F package=@...
-package: sdk-check
+package: sdk-check tooling-check
 	rm -rf $(STAGE)
 	mkdir -p $(STAGE)/server
 	cp manifest.yaml $(STAGE)/manifest.yaml
@@ -65,19 +74,19 @@ package: sdk-check
 	GOOS=darwin  GOARCH=amd64 go build -o $(STAGE)/server/plugin-darwin-amd64      ./server
 	GOOS=darwin  GOARCH=arm64 go build -o $(STAGE)/server/plugin-darwin-arm64      ./server
 	GOOS=windows GOARCH=amd64 go build -o $(STAGE)/server/plugin-windows-amd64.exe ./server
-	cd $(KANDEV_TOOLING) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT)
+	cd "$(KANDEV_TOOLING)" && go run ./cmd/plugin-pack -dir "$(CURDIR)/$(STAGE)" -out "$(CURDIR)/$(PKG_OUT)"
 	rm -rf $(STAGE)
 	@echo "Wrote $(PKG_OUT)"
 
 ## Package for the host platform only — faster local iteration than the full
 ## 5-platform `make package` (matches plugin-pack's -platform-only).
-package-host: sdk-check
+package-host: sdk-check tooling-check
 	rm -rf $(STAGE)
 	mkdir -p $(STAGE)/server
 	cp manifest.yaml $(STAGE)/manifest.yaml
 	cp -r ui $(STAGE)/ui
 	go build -o $(STAGE)/server/plugin-$$(go env GOOS)-$$(go env GOARCH)$$(go env GOEXE) ./server
-	cd $(KANDEV_TOOLING) && go run ./cmd/plugin-pack -dir $(CURDIR)/$(STAGE) -out $(CURDIR)/$(PKG_OUT) -platform-only
+	cd "$(KANDEV_TOOLING)" && go run ./cmd/plugin-pack -dir "$(CURDIR)/$(STAGE)" -out "$(CURDIR)/$(PKG_OUT)" -platform-only
 	rm -rf $(STAGE)
 	@echo "Wrote $(PKG_OUT)"
 

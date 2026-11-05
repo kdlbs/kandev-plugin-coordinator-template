@@ -40,10 +40,6 @@ jobs:
         working-directory: plugin
         run: npm ci --ignore-scripts
 
-      - name: Check installed SDK compatibility
-        working-directory: plugin
-        run: make sdk-check
-
       - name: Check module files are tidy
         working-directory: plugin
         run: |
@@ -55,12 +51,6 @@ jobs:
         run: |
           test -z "$(gofmt -l .)" || { echo "gofmt needed:"; gofmt -l .; exit 1; }
 
-      - name: Vet
+      - name: Check compatibility, vet, and test
         working-directory: plugin
-        run: make vet
-
-      - name: Test
-        working-directory: plugin
-        run: |
-          make test
-          make audit-recipes
+        run: make sdk-check vet test audit-recipes

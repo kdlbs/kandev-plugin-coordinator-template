@@ -7,8 +7,8 @@ and [public authoring guide](https://github.com/kdlbs/kandev/blob/main/docs/publ
 - Pin public `github.com/kdlbs/kandev/pluginsdk` and `@kdlbs/plugin-sdk` exactly
   to the same verified SDK version. Do not add SDK `replace`, `file:`, or `link:`
   substitutions. Commit generated Go sums and npm locks.
-- Use the highest installed SDK-wide host floor for `min_kandev_version` and
-  keep `api_version` supported by both SDKs. SDK, host, and plugin versions are
+- Set `min_kandev_version` to at least the highest host floor in the installed
+  Go and npm SDKs' `sdk-release.json` records. Keep `api_version` supported by both SDKs. SDK, host, and plugin versions are
   independent. Preserve installed-plugin behavior when migrating imports.
 - Install with `npm ci --ignore-scripts`, then run `make sdk-check`, `make test`,
   `make vet`, `make build`, and `make audit-recipes`. The frontend scripts are

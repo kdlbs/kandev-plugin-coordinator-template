@@ -78,6 +78,7 @@ npm ci --ignore-scripts
 make test
 make vet
 make build
+make audit-recipes
 ```
 
 `make test` runs the installed-dependency compatibility checker, Go tests,
@@ -103,7 +104,8 @@ require reinstalling an already built plugin.
 
 Packaging still uses backend-owned `cmd/plugin-pack`. Its separately tested
 source commit is recorded in `.kandev-tooling-ref`; this is a tooling pin,
-not an SDK dependency. A packaging checkout must include `pluginsdk/` because
+not an SDK dependency. Packaging verifies its HEAD against that pin before
+staging or compiling the package. A packaging checkout must include `pluginsdk/` because
 the backend tool's own module has a local SDK replacement.
 
 ```bash

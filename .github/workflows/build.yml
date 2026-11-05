@@ -54,14 +54,6 @@ jobs:
         working-directory: plugin
         run: npm ci --ignore-scripts
 
-      - name: Check installed SDK compatibility
-        working-directory: plugin
-        run: make sdk-check
-
-      - name: Build host binary
-        working-directory: plugin
-        run: make build
-
       - name: Package and validate all supported platforms
         working-directory: plugin
-        run: make verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"
+        run: make build verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"

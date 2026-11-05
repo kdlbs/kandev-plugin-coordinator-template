@@ -1,5 +1,7 @@
 # Merge this fragment into manifest.yaml only when enabling the source-control
 # recipe. Replace every `acme` identifier and label consistently.
+# Merge into existing mappings; do not append this YAML to the base file.
+# Keep a single min_kandev_version entry and a single capabilities mapping.
 #
 # SDK 0.1.0 supports API v2 and requires Kandev 0.99.0 across the whole SDK.
 # Keep this minimum when merging; recheck installed SDK release records on upgrades.

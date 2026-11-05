@@ -1,6 +1,13 @@
 # Public SDK migration validation
 
-Validated on 2026-11-05 from default branch `7f45580a5a3d0406b5ad80b169e89544cdd22b61`.
+Validated on 2026-11-05. The plugin repository baseline on `main` was
+`7f45580a5a3d0406b5ad80b169e89544cdd22b61` (not a Kandev host commit).
+The first preflight, host-only packaging, and detailed minimum-host smoke used
+plugin implementation `a1d7419ccdff137f6eb6eed0e01e9e9c979ca62f`.
+The final isolated consumer, full packaging, and full-archive installation used
+`cc7e0fce5c1cf42272869216e140a1638fd7e8ad`; that follow-up only restored the
+Makefile's default build target and wrapped a comment. Commit
+`7abab4acdc52f551cc9d7e3c2ab5019d5fb489c0` added this evidence report.
 No pre-existing working-tree edits or repository `AGENTS.md` were present.
 The parent repository's `create-kandev-plugin` workflow, public authoring guide,
 and approved `docs/plans/plugin-sdk-publishing/template-migration.md` were read.

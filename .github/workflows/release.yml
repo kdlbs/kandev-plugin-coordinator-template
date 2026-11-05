@@ -191,21 +191,11 @@ jobs:
         working-directory: plugin
         run: npm ci --ignore-scripts
 
-      - name: Check installed SDK compatibility
-        working-directory: plugin
-        run: make sdk-check
-
-      - name: Verify
+      - name: Verify and package all platforms
         working-directory: plugin
         run: |
           test -z "$(gofmt -l .)" || { echo "gofmt needed:"; gofmt -l .; exit 1; }
-          make vet
-          make test
-          make audit-recipes
-
-      - name: Package and validate all platforms
-        working-directory: plugin
-        run: make verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"
+          make sdk-check vet test audit-recipes verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"
 
       - name: Generate release checksums
         working-directory: plugin
