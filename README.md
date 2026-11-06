@@ -125,7 +125,7 @@ SDK compilation is independent of this checkout; packaging is not checkout-free.
 
 Install the generated archive through **Settings > Plugins** in a compatible Kandev instance.
 Approve the required capabilities for the selected workspace.
-The package filename is `kandev-plugin-coordinator-template-0.2.1.tar.gz` before you rename the template.
+The package filename is `kandev-plugin-coordinator-template-0.3.0.tar.gz` before you rename the template.
 
 ## Code map
 

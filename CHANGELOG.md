@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0] - 2026-11-06
+
+### Changed
+
+- Record review follow-up validation (c40d142)
+- Address migration review and enforce packaging tooling pin (e884058)
+- Record standalone SDK and minimum-host validation (7abab4a)
+- Preserve build as the default make target (cc7e0fc)
+- Migrate coordinator template to public plugin SDK 0.1.0 (a1d7419)
+
+
 ## [0.2.1] - 2026-09-30
 
 ### Changed

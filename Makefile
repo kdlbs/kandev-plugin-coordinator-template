@@ -6,7 +6,7 @@
 # When you rename the plugin, update BIN and VERSION to match manifest.yaml's
 # id and version (PKG_OUT is derived from them).
 BIN := bin/kandev-plugin-coordinator-template
-VERSION := 0.2.1
+VERSION := 0.3.0
 STAGE := .build/stage
 PKG_OUT := kandev-plugin-coordinator-template-$(VERSION).tar.gz
 

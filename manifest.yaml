@@ -1,7 +1,7 @@
 id: "kandev-plugin-coordinator-template"
 api_version: 2
 min_kandev_version: "0.99.0"
-version: "0.2.1"
+version: "0.3.0"
 display_name: "Coordinator Template"
 description: "A customizable coordinator built from public managed-conversation and exact task APIs."
 author: "Kandev contributors"
