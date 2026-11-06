@@ -2,7 +2,7 @@ import type {
   PluginHostApi,
   PluginRegistry,
   RepositoryProviderRegistration,
-} from "@kandev/plugin-sdk";
+} from "@kdlbs/plugin-sdk";
 import { describe, expect, it, vi } from "vitest";
 import { registerSourceControlRecipe } from "./register";
 

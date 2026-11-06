@@ -23,13 +23,19 @@ jobs:
         with:
           path: plugin
 
-      - name: Check out kandev SDK contract
+      - name: Read packaging tooling pin
+        id: tooling
+        run: echo "ref=$(cat plugin/.kandev-tooling-ref)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out Kandev packaging tooling
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: kdlbs/kandev
-          path: kandev
-          ref: f24a785cd3012bbf14c06134ed480e82fd7613a3
-          sparse-checkout: apps/backend
+          path: kandev-tooling
+          ref: ${{ steps.tooling.outputs.ref }}
+          sparse-checkout: |
+            apps/backend
+            pluginsdk
 
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
@@ -37,10 +43,17 @@ jobs:
           go-version-file: plugin/go.mod
           cache-dependency-path: plugin/go.sum
 
-      - name: Build host binary
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: plugin/package-lock.json
+
+      - name: Install recipe test dependencies
         working-directory: plugin
-        run: make build
+        run: npm ci --ignore-scripts
 
       - name: Package and validate all supported platforms
         working-directory: plugin
-        run: make verify-package
+        run: make build verify-package KANDEV_TOOLING="$GITHUB_WORKSPACE/kandev-tooling/apps/backend"

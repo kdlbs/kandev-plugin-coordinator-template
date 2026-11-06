@@ -10,9 +10,9 @@
     "typecheck:recipes": "tsc --project tsconfig.recipes.json --noEmit"
   },
   "devDependencies": {
-    "@kandev/plugin-sdk": "file:../kandev/apps/packages/plugin-sdk",
+    "@kdlbs/plugin-sdk": "0.1.0",
     "typescript": "5.9.3",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   },
   "overrides": {
     "nanoid": "5.1.16"
